@@ -1,15 +1,18 @@
 from glob import glob
 from tqdm import tqdm
+
+from baseline import id2name
 from model_handling import *
 import numpy as np
 import os
+from tensorflow.contrib.learn.python.learn.learn_io.generator_io import generator_input_fn
 
 __author__ = 'Alex Ozerin'
 
 # now we want to predict!
 
 
-def generate_submission(wavfile, datadir, model_dir, run_config):
+def generate_submission(wavfile, datadir, model_dir, run_config, hparams):
     paths = glob(os.path.join(datadir, 'test/audio/*wav'))
 
     def test_data_generator(data):

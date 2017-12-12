@@ -18,15 +18,15 @@ def model_handler(features, labels, mode, params, config):
     # wav is a waveform signal with shape (16000, )
     wav = features['wav']
     # we want to compute spectograms by means of short time fourier transform:
-    specgram = signal.stft(
+    spectrogram = signal.stft(
         wav,
         400,  # 16000 [samples per second] * 0.025 [s] -- default stft window frame
         160,  # 16000 * 0.010 -- default stride
     )
-    # specgram is a complex tensor, so split it into abs and phase parts:
-    phase = tf.angle(specgram) / np.pi
+    # spectrogram is a complex tensor, so split it into abs and phase parts:
+    phase = tf.angle(spectrogram) / np.pi
     # log(1 + abs) is a default transformation for energy units
-    amp = tf.log1p(tf.abs(specgram))
+    amp = tf.log1p(tf.abs(spectrogram))
 
     x = tf.stack([amp, phase], axis=3)  # shape is [bs, time, freq_bins, 2]
     x = tf.to_float(x)  # we want to have float32, not float64

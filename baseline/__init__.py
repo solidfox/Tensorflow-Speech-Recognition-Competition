@@ -6,6 +6,7 @@ from data_loading import *
 from data_iterator import *
 from model_handling import *
 from network_configuration import *
+from generate_submission import *
 
 def main():
     params = dict(
@@ -57,6 +58,12 @@ def main():
         run_config=run_config,
         schedule="continuous_train_and_eval",
         hparams=hparams)
+
+    generate_submission(wavfile=wavfile,
+                        datadir=DATADIR,
+                        model_dir=model_dir,
+                        run_config=run_config,
+                        hparams=hparams)
 
 
 if __name__ == '__main__':

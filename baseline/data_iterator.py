@@ -1,3 +1,5 @@
+from data_loading import name2id
+
 __author__ = 'Alex Ozerin'
 
 import numpy as np
