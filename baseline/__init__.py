@@ -20,7 +20,7 @@ def main():
     )
 
     hparams = tf.contrib.training.HParams(**params)
-    os.makedirs(os.path.join(OUTDIR, 'eval'), exist_ok=True)
+    os.makedirs(os.path.join(OUTDIR, 'eval'))
     model_dir = OUTDIR
 
     run_config = tf.contrib.learn.RunConfig(model_dir=model_dir)
