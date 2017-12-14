@@ -4,7 +4,7 @@ import os
 import re
 from glob import glob
 
-DATADIR = './data'  # unzipped train and test data
+DATADIR = '../data'  # unzipped train and test data
 OUTDIR = './model-k'  # just a random name
 # Data Loading
 

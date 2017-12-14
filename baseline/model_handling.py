@@ -1,7 +1,7 @@
 __author__ = 'Alex Ozerin'
 
 import tensorflow as tf
-import network_configuration
+import baseline.network_configuration
 import numpy as np
 from tensorflow.contrib import signal
 
@@ -12,7 +12,7 @@ from tensorflow.contrib import signal
 def model_handler(features, labels, mode, params, config):
     # Im really like to use make_template instead of variable_scopes and re-usage
     extractor = tf.make_template(
-        'extractor', network_configuration,
+        'extractor', baseline.network_configuration,
         create_scope_now_=True,
     )
     # wav is a waveform signal with shape (16000, )

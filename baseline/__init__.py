@@ -2,11 +2,11 @@ __author__ = 'Daniel Schlaug'
 
 import os
 import tensorflow as tf
-from data_loading import *
-from data_iterator import *
-from model_handling import *
-from network_configuration import *
-from generate_submission import *
+from baseline.data_loading import *
+from baseline.data_iterator import *
+from baseline.model_handling import model_handler
+from baseline.network_configuration import *
+from baseline.generate_submission import *
 
 def main():
     params = dict(

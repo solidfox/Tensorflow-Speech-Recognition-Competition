@@ -2,7 +2,7 @@ from glob import glob
 from tqdm import tqdm
 
 from baseline import id2name
-from model_handling import *
+from baseline.model_handling import *
 import numpy as np
 import os
 from tensorflow.contrib.learn.python.learn.learn_io.generator_io import generator_input_fn
