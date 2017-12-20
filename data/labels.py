@@ -35,6 +35,9 @@ class Label(Label):
     unknown = Label("unknown")
     all_labels = [yes, no, up, down, left, right, on, off, stop, go, silence, unknown]
 
+    def __init__(self):
+        raise TypeError("Don't instantiate labels. Use the class variables. (E g Label.yes)")
+
     @staticmethod
     def from_string(string):
         labels = filter(lambda label: label.string == string, Label.all_labels)
