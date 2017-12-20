@@ -102,6 +102,9 @@ ENV/
 .DS_Store
 
 # data folder
-/data
+/data/test*
+/data/train*
+
+# jetbrains
 .idea
 *.iml
