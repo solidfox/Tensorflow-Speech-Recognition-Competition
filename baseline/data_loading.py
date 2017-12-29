@@ -34,6 +34,7 @@ def load_data(data_dir):
     possible = set(POSSIBLE_LABELS)
     train, val = [], []
     for entry in all_files:
+        entry = entry.replace("\\", "/")
         r = re.match(pattern, entry)
         if r:
             label, uid = r.group(2), r.group(3)

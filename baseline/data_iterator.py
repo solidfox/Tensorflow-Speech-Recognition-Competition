@@ -5,6 +5,7 @@ __author__ = 'Alex Ozerin'
 import numpy as np
 from scipy.io import wavfile
 
+
 def data_generator(data, params, mode='train'):
     def generator():
         if mode == 'train':
@@ -25,11 +26,8 @@ def data_generator(data, params, mode='train'):
                         beg = np.random.randint(0, len(wav) - L)
                     else:
                         beg = 0
-                    yield dict(
-                        target=np.int32(label_id),
-                        wav=wav[beg: beg + L],
-                    )
+                    yield (np.int32(label_id), wav[beg: beg + L])
             except Exception as err:
                 print(err, label_id, uid, fname)
 
-    return generator
+    return generator()

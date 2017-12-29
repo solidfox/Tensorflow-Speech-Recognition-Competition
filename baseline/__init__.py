@@ -8,6 +8,7 @@ from baseline.model_handling import model_handler
 from baseline.network_configuration import *
 from baseline.generate_submission import *
 
+
 def main():
     params = dict(
         seed=2018,
@@ -28,19 +29,44 @@ def main():
     # it's a magic function :)
     from tensorflow.contrib.learn.python.learn.learn_io.generator_io import generator_input_fn
 
-    train_input_fn = generator_input_fn(
-        x=data_generator(trainset, hparams, 'train'),
-        target_key='target',  # you could leave target_key in features, so labels in model_handler will be empty
-        batch_size=hparams.batch_size, shuffle=True, num_epochs=None,
-        queue_capacity=3 * hparams.batch_size + 10, num_threads=1,
-    )
+    for i in data_generator(trainset, hparams, 'train'):
+        print(i)
+        break
 
-    val_input_fn = generator_input_fn(
-        x=data_generator(valset, hparams, 'val'),
-        target_key='target',
-        batch_size=hparams.batch_size, shuffle=True, num_epochs=None,
-        queue_capacity=3 * hparams.batch_size + 10, num_threads=1,
-    )
+    def train_input_fn():
+        dataset = tf.data.Dataset.from_generator(data_generator(trainset, hparams, 'train'), (tf.int32, tf.float32),
+                                                 (tf.TensorShape([]), tf.TensorShape([None])))
+        dataset = dataset.shuffle(10000)
+        dataset = dataset.batch(hparams.batch_size)
+
+        iterator = dataset.make_one_shot_iterator()
+        labels, wav = iterator.get_next()
+
+        return wav, labels
+
+    def val_input_fn():
+        dataset = tf.data.Dataset.from_generator(data_generator(valset, hparams, 'val'), (tf.int32, tf.float32))
+        dataset = dataset.shuffle(10000)
+        dataset = dataset.batch(hparams.batch_size)
+
+        iterator = dataset.make_one_shot_iterator()
+        wav, labels = iterator.get_next()
+
+        return wav, labels
+
+    # train_input_fn = generator_input_fn(
+    #     x=data_generator(trainset, hparams, 'train'),
+    #     target_key='target',  # you could leave target_key in features, so labels in model_handler will be empty
+    #     batch_size=hparams.batch_size, shuffle=True, num_epochs=None,
+    #     queue_capacity=3 * hparams.batch_size + 10, num_threads=1,
+    # )
+
+    # val_input_fn = generator_input_fn(
+    #     x=data_generator(valset, hparams, 'val'),
+    #     target_key='target',
+    #     batch_size=hparams.batch_size, shuffle=True, num_epochs=None,
+    #     queue_capacity=3 * hparams.batch_size + 10, num_threads=1,
+    # )
 
     def _create_my_experiment(run_config, hparams):
         exp = tf.contrib.learn.Experiment(
