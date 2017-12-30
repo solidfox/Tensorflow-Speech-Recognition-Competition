@@ -1,8 +1,8 @@
 __author__ = 'Daniel Schlaug'
 
-
 _all_label_strings = 'yes no up down left right on off stop go silence unknown'.split()
-_accepted_as_unknown = set(filter(lambda label: label not in _all_label_strings, "bed bird cat dog down eight five four go happy house left marvin nine no off on one right seven sheila six stop three tree two up wow yes zero".split()))
+_accepted_as_unknown = set(filter(lambda label: label not in _all_label_strings,
+                                  "bed bird cat dog down eight five four go happy house left marvin nine no off on one right seven sheila six stop three tree two up wow yes zero".split()))
 _set = set(_all_label_strings)
 _name2index = {name: i for i, name in enumerate(_all_label_strings)}
 
@@ -45,7 +45,7 @@ class Label(Label):
             return labels[0]
         elif string == "_background_noise_":
             return Label.silence
-        elif string in Label._accepted_as_unknown:
+        elif string in _accepted_as_unknown:
             return Label.unknown
         else:
             raise AttributeError(string + " is not a valid label-string.")
