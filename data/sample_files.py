@@ -1,8 +1,10 @@
 from glob import glob
 from os.path import dirname, basename
+from random import shuffle
 import labels as lbl
 import os
-import re
+import tensorflow as tf
+from tensorflow import data
 
 __author__ = 'Daniel Schlaug'
 
@@ -18,21 +20,21 @@ class SamplesManager:
             return basename(dirname(sample_path))
 
         self.files_labels = map(
-            lambda path: (path, lbl.Label.from_string(label(path)).index, basename(path).split("_", 1)[0]), all_files)
+            lambda path: (path, lbl.Label.from_string(label(path)).index), all_files)
 
-        self.valset = []
-        self.trainset = []
+        shuffle(self.files_labels)
+        valset_proportion = 0.1
+        index = int(valset_proportion * len(self.files_labels))
+        self.valset, self.trainset = self.files_labels[:index], self.files_labels[index:]
 
-        with open(os.path.join(data_dir, 'train/validation_list.txt'), 'r') as fin:
-            validation_files = fin.readlines()
+        def toDataset(samples):
+            paths, labels = [], []
+            for sample in samples:
+                paths.append(sample[0])
+                labels.append(sample[1])
+            paths = tf.Variable(paths, dtype=tf.string)
+            labels = tf.Variable(labels, dtype=tf.int32)
+            return data.Dataset.from_tensors((paths, labels))
 
-        valuid = set()
-
-        for entry in validation_files:
-            valuid.add(basename(entry).split("_", 1)[0])
-
-        for sample in self.files_labels:
-            if sample[2] in valuid:
-                self.valset.append(sample[:2])
-            else:
-                self.trainset.append(sample[:2])
+        self.valset = toDataset(self.valset)
+        self.trainset = toDataset(self.trainset)
