@@ -6,6 +6,9 @@ import os
 import tensorflow as tf
 from tensorflow import data
 
+from mfcc import create_mfcc
+from resampling_ftt import resample
+
 __author__ = 'Daniel Schlaug'
 
 
@@ -28,10 +31,11 @@ class SamplesManager:
         self.valset, self.trainset = self.files_labels[:index], self.files_labels[index:]
 
         def toDataset(samples):
-            paths, labels = [], []
+            paths, labels, mfcc = [], [], []
             for sample in samples:
                 paths.append(sample[0])
                 labels.append(sample[1])
+                # mfcc.append(create_mfcc(resample(sample[0], 8000), 8000, 128, 13))
             paths = tf.Variable(paths, dtype=tf.string)
             labels = tf.Variable(labels, dtype=tf.int32)
             return data.Dataset.from_tensors((paths, labels))

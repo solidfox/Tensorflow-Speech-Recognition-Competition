@@ -1,4 +1,4 @@
-from data_loading import name2id
+from baseline.data_loading import name2id
 
 __author__ = 'Alex Ozerin'
 
