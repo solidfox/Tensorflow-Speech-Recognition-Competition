@@ -53,3 +53,8 @@ class Label(Label):
     @staticmethod
     def from_index(index):
         return Label.all_labels[index]
+
+    @staticmethod
+    def n_labels():
+        return len(Label.all_labels)
+
