@@ -1,23 +1,24 @@
 __author__ = 'Daniel Schlaug'
 
 import tensorflow as tf
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import Conv2D, Dense, MaxPool2D, Dropout
 
 from data.labels import Label
 
-def convolutional_model_fn(input_layer, dropout_rate, seed, mode):
+
+def convolutional_model_fn(preprocessed_voice_samples, labels, mode, dropout_rate, seed, learning_rate):
     """
     Generates a convolutional model.
 
-    :param input_layer: The inputs to the generated network.
+    :param preprocessed_voice_samples: The inputs to the generated network.
+    :param labels: The word-labels for the spoken samples.
+    :param mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
     :param dropout_rate: The fraction of nodes that are randomly deactivated at each iteration.
     :param seed: Seed for any random generators.
-    :param mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
-    :return: The cofigured tensorflow network.
+    :param learning_rate: The learning rate that the estimator will use.
+    :return: The configured tensorflow network.
     """
 
-    previous_layer = input_layer
+    previous_layer = preprocessed_voice_samples
 
     previous_layer = tf.layers.conv2d(
         inputs=previous_layer,
@@ -56,7 +57,7 @@ def convolutional_model_fn(input_layer, dropout_rate, seed, mode):
     previous_layer = tf.layers.dense(
         inputs=previous_layer,
         units=200,
-        activation=tf.nn.softmax_cross_entropy_with_logits)
+        activation=tf.nn.elu)
 
     previous_layer = tf.layers.dense(
         inputs=previous_layer,
@@ -65,4 +66,32 @@ def convolutional_model_fn(input_layer, dropout_rate, seed, mode):
 
     logits = previous_layer
 
-    if
+    return estimator_spec(labels, learning_rate, logits, mode)
+
+
+def estimator_spec(labels, learning_rate, logits, mode):
+    if mode == tf.estimator.ModeKeys.PREDICT:
+        return tf.estimator.EstimatorSpec(
+            mode=mode,
+            predictions=tf.nn.softmax(logits, "softmax_predictions"))
+    loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+    if mode == tf.estimator.ModeKeys.TRAIN:
+        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
+        train_operation = optimizer.minimize(
+            loss=loss,
+            global_step=tf.train.get_global_step())
+        return tf.estimator.EstimatorSpec(
+            mode=mode,
+            loss=loss,
+            train_op=train_operation)
+
+    else:  # mode == tf.estimator.ModeKeys.EVAL
+        evaluation_metric_operation = {
+            'accuracy': tf.metrics.accuracy(
+                labels=labels,
+                predictions=tf.argmax(inputs=logits, axis=1))}
+        return tf.estimator.EstimatorSpec(
+            mode=mode,
+            loss=loss,
+            eval_metric_ops=evaluation_metric_operation)
+
