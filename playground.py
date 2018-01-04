@@ -1,9 +1,10 @@
 from data import *
 
 def main():
-    sample_manager = SamplesManager('data')
+    sample_manager = SamplesManager('data', 0.1)
     print(len(sample_manager.files_labels))
     print(sample_manager.files_labels[0])
+    print(loadwav(sample_manager.files_labels[0].path).shape)
     print(sample_manager.valset)
     print(sample_manager.trainset)
     print(Label.all_labels)
