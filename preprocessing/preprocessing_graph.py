@@ -13,6 +13,6 @@ def decoded_samples_preprocessing(decoded_samples):
         num_mel_bins=80)
 
     # normalize
-    # TODO: dimension
-    normalized_mfcc = tf.nn.l2_normalize(mfccs, dim=0)
+    # TODO: check dimension
+    normalized_mfcc = tf.nn.l2_normalize(mfccs, dim=[1, 2])
     return normalized_mfcc
