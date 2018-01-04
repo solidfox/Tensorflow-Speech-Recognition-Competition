@@ -1,5 +1,5 @@
 from data import *
-from preprocessing.preprocessing_graph import wavs_to_mfccs
+from preprocessing.preprocessing_graph import decoded_samples_preprocessing
 from model.convolutional import convolutional_model_fn
 
 signals = tf.placeholder(tf.float32, [None, 16000])
@@ -14,7 +14,7 @@ def main():
     print(Label.all_labels)
 
 
-    mfccs = wavs_to_mfccs(signals)
+    mfccs = decoded_samples_preprocessing(signals)
     # tf_network = convolutional_model_fn(preprocessed_voice_samples=mfccs,
     #                                     labels=sample_manager.files_labels.map(lambda p, labels, w: labels), ...)
 

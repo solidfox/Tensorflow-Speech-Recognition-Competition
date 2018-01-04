@@ -35,7 +35,7 @@ def display_mfcc(mfcc):
     plt.tight_layout()
 
 
-def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_hertz, num_mel_bins, sample_rate=16000):
+def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_hertz, fft_resolution, num_mel_bins, sample_rate=16000):
     """
     :param signals: [batch_size, number_samples]. Both batch_size and number_samples may be unknown.
     :param window_frame_length: frame_length
@@ -51,6 +51,7 @@ def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_h
         signals,
         window_frame_length,
         stride,
+        fft_length=fft_resolution
     )
     spectrograms = tf.abs(stfts)
 
