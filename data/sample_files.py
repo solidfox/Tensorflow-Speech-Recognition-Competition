@@ -68,12 +68,10 @@ def loadwav(path):
 
 
 def samples_to_dataset(samples):
-    paths, labels, wavs = [], [], []
+    labels, wavs = [], []
     for sample in samples:
-        paths.append(sample.path)
         labels.append(sample.label.index)
         wavs.append(sample.wav)
-    paths = tf.Variable(paths, dtype=tf.string)
     labels = tf.Variable(labels, dtype=tf.int16)
     wavs = tf.convert_to_tensor(np.asarray(wavs))
-    return data.Dataset.from_tensor_slices((paths, labels, wavs))
+    return data.Dataset.from_tensor_slices((labels, wavs))
