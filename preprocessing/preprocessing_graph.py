@@ -3,6 +3,7 @@ from preprocessing.mfcc import tf_mfcc
 
 
 def decoded_samples_preprocessing(decoded_samples, num_mel_bins=80, fft_resolution=256):
+    """Applies mfcc and normalization."""
     mfccs = tf_mfcc(
         decoded_samples,
         window_frame_length=200,

@@ -24,11 +24,15 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, con
     """
     previous_layer = preprocessed_voice_samples
 
-    previous_layer = preprocessing.
+    previous_layer = preprocessing.decoded_samples_preprocessing(
+        decoded_samples=previous_layer,
+        num_mel_bins=80,
+        fft_resolution=256
+    )
 
     previous_layer = tf.layers.conv2d(
         inputs=previous_layer,
-        filters=8,
+        filters=32,
         kernel_size=[8, 20],
         padding='same',
         activation=tf.nn.elu)
