@@ -1,4 +1,5 @@
 import tensorflow as tf
+import preprocessing
 from data.labels import Label
 from model.estimator_spec import estimator_spec
 
@@ -13,20 +14,17 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, con
         preprocessed_voice_samples: A 2D tensor with the inputs to the generated network.
         labels: The word-labels for the spoken samples.
         mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
-        params: A dict of hyperparameters on the following form:
-            dict(
-                dropout_rate=(Float) The fraction of nodes that are randomly deactivated at each iteration.
-                seed=(Int) Seed for any random generators.
-                learning_rate=(Float) The learning rate that the estimator will use.
-            )
+        params (HParam): A tf.estimator.HParam object with the following hyperparameters:
+            dropout_rate (float) The fraction of nodes that are randomly deactivated at each iteration.
+            learning_rate (float) The learning rate that the estimator will use.
         config: Currently unused.
 
     Returns:
         An EstimatorSpec for the given input.
     """
-    tf.random_seed(params["seed"])
-
     previous_layer = preprocessed_voice_samples
+
+    previous_layer = preprocessing.
 
     previous_layer = tf.layers.conv2d(
         inputs=previous_layer,
@@ -59,7 +57,7 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, con
 
     previous_layer = tf.layers.dropout(
         inputs=previous_layer,
-        rate=params["dropout_rate"],
+        rate=params.dropout_rate,
         training=mode == tf.estimator.ModeKeys.TRAIN)
 
     previous_layer = tf.layers.dense(
@@ -74,4 +72,4 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, con
 
     logits = previous_layer
 
-    return estimator_spec(labels, params["learning_rate"], logits, mode)
+    return estimator_spec(labels, params.learning_rate, logits, mode)
