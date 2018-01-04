@@ -1,41 +1,41 @@
 # Math
 import numpy as np
-import librosa
+# import librosa
 
 # Visualization
 import matplotlib.pyplot as plt
-import librosa.display
+# import librosa.display
 
 import tensorflow as tf
 
 # sample and sample_rate after the FTT
 # n_mels=128 n_mfcc=13
-def create_mfcc(sample, sample_rate, n_mels, n_mfcc):
-    S = librosa.feature.melspectrogram(sample, sr=sample_rate, n_mels=n_mels)
-    # Convert to log scale (dB). The reference chosen is the max peak power
-    log_s = librosa.power_to_db(S, ref=np.max)
-    mfcc = librosa.feature.mfcc(S=log_s, n_mfcc=n_mfcc)
-    return mfcc
+# def create_mfcc(sample, sample_rate, n_mels, n_mfcc):
+#     S = librosa.feature.melspectrogram(sample, sr=sample_rate, n_mels=n_mels)
+#     # Convert to log scale (dB). The reference chosen is the max peak power
+#     log_s = librosa.power_to_db(S, ref=np.max)
+#     mfcc = librosa.feature.mfcc(S=log_s, n_mfcc=n_mfcc)
+#     return mfcc
+#
+# def display_mfcc(mfcc):
+#     """
+#     Just to display mfcc created by librosa
+#     :param mfcc:
+#     :return:
+#     """
+#     # Let's pad on the first and second deltas while we're at it
+#     delta2_mfcc = librosa.feature.delta(mfcc, order=2)
+#
+#     plt.figure(figsize=(12, 4))
+#     librosa.display.specshow(delta2_mfcc)
+#     plt.ylabel('MFCC coeffs')
+#     plt.xlabel('Time')
+#     plt.title('MFCC')
+#     plt.colorbar()
+#     plt.tight_layout()
 
-def display_mfcc(mfcc):
-    """
-    Just to display mfcc created by librosa
-    :param mfcc:
-    :return:
-    """
-    # Let's pad on the first and second deltas while we're at it
-    delta2_mfcc = librosa.feature.delta(mfcc, order=2)
 
-    plt.figure(figsize=(12, 4))
-    librosa.display.specshow(delta2_mfcc)
-    plt.ylabel('MFCC coeffs')
-    plt.xlabel('Time')
-    plt.title('MFCC')
-    plt.colorbar()
-    plt.tight_layout()
-
-
-def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_hertz, num_mel_bins, sample_rate=16000):
+def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_hertz, fft_resolution, num_mel_bins, sample_rate=16000):
     """
     :param signals: [batch_size, number_samples]. Both batch_size and number_samples may be unknown.
     :param window_frame_length: frame_length
@@ -51,6 +51,7 @@ def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_h
         signals,
         window_frame_length,
         stride,
+        fft_length=fft_resolution
     )
     spectrograms = tf.abs(stfts)
 
