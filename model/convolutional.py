@@ -1,22 +1,30 @@
+import tensorflow as tf
+from data.labels import Label
+from model.estimator_spec import estimator_spec
+
 __author__ = 'Daniel Schlaug'
 
-import tensorflow as tf
 
-from data.labels import Label
-
-
-def convolutional_model_fn(preprocessed_voice_samples, labels, mode, dropout_rate, seed, learning_rate):
+def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, config=None):
     """
-    Generates a convolutional model.
+    Configures a convolutional model.
 
-    :param preprocessed_voice_samples: The inputs to the generated network.
-    :param labels: The word-labels for the spoken samples.
-    :param mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
-    :param dropout_rate: The fraction of nodes that are randomly deactivated at each iteration.
-    :param seed: Seed for any random generators.
-    :param learning_rate: The learning rate that the estimator will use.
-    :return: The configured tensorflow network.
+    Args:
+        preprocessed_voice_samples: A 2D tensor with the inputs to the generated network.
+        labels: The word-labels for the spoken samples.
+        mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
+        params: A dict of hyperparameters on the following form:
+            dict(
+                dropout_rate=(Float) The fraction of nodes that are randomly deactivated at each iteration.
+                seed=(Int) Seed for any random generators.
+                learning_rate=(Float) The learning rate that the estimator will use.
+            )
+        config: Currently unused.
+
+    Returns:
+        An EstimatorSpec for the given input.
     """
+    tf.random_seed(params["seed"])
 
     previous_layer = preprocessed_voice_samples
 
@@ -51,7 +59,7 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, dropout_rat
 
     previous_layer = tf.layers.dropout(
         inputs=previous_layer,
-        rate=dropout_rate,
+        rate=params["dropout_rate"],
         training=mode == tf.estimator.ModeKeys.TRAIN)
 
     previous_layer = tf.layers.dense(
@@ -66,32 +74,4 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, dropout_rat
 
     logits = previous_layer
 
-    return estimator_spec(labels, learning_rate, logits, mode)
-
-
-def estimator_spec(labels, learning_rate, logits, mode):
-    if mode == tf.estimator.ModeKeys.PREDICT:
-        return tf.estimator.EstimatorSpec(
-            mode=mode,
-            predictions=tf.nn.softmax(logits, "softmax_predictions"))
-    loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
-    if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
-        train_operation = optimizer.minimize(
-            loss=loss,
-            global_step=tf.train.get_global_step())
-        return tf.estimator.EstimatorSpec(
-            mode=mode,
-            loss=loss,
-            train_op=train_operation)
-
-    else:  # mode == tf.estimator.ModeKeys.EVAL
-        evaluation_metric_operation = {
-            'accuracy': tf.metrics.accuracy(
-                labels=labels,
-                predictions=tf.argmax(inputs=logits, axis=1))}
-        return tf.estimator.EstimatorSpec(
-            mode=mode,
-            loss=loss,
-            eval_metric_ops=evaluation_metric_operation)
-
+    return estimator_spec(labels, params["learning_rate"], logits, mode)
