@@ -16,7 +16,6 @@ def hyper_parameter_search():
 
     run_config = tf.estimator.RunConfig(
         model_dir="model_output",
-        tf_random_seed=2222,
         save_summary_steps=100
         # save_checkpoints_steps=
     )
@@ -31,7 +30,8 @@ def hyper_parameter_search():
 
     tf_h_params = tf.contrib.training.HParams(
         learning_rate=0.001,
-        dropout_rate =0.3
+        dropout_rate =0.3,
+        random_seed=2222
     )
 
     # Run experiments with all their corresponding parameter grids.
@@ -45,14 +45,3 @@ def hyper_parameter_search():
     )
 
     # (Evaluate the results and spin off more experiments?)
-
-
-
-
-
-
-
-
-
-
-def run_experiment(experiment, hparams):
