@@ -12,10 +12,13 @@ __author__ = 'Daniel Schlaug'
 
 
 class Sample:
-    def __init__(self, path):
+    def __init__(self, path, wav=None):
         self.path = path
         self.label = Label.from_string(basename(dirname(path)))
-        # self.wav = loadwav(path)
+        if wav is not None:
+            self.wav = wav
+        else:
+            self.wav = loadwav(path)
 
 
 class SamplesManager:
@@ -28,35 +31,40 @@ class SamplesManager:
         :param data_dir: The parent folder of the training data. Should contain a folder called train with the training data.
         """
 
-        all_files = glob(os.path.join(data_dir, 'train/audio/*/*wav'))
-
-        self.files_labels = map(Sample, all_files)
-        wavs = [f.path for f in self.files_labels]
-        print(wavs[:3])
-
-        count_larger(wavs)
-
-        self.files_labels = self.files_labels[:10]
-
         seed = 0
         rand = random.Random(seed)
+
+        all_files = glob(os.path.join(data_dir, 'train/audio/[!_]*/*wav'))
+        all_files = all_files[:10]
+
+        noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav'))
+        noises = np.repeat(noises, 4)
+        print("Noises data: " + str(len(noises)))
+
+        self.files_labels = map(Sample, all_files)
+        noises = map(Sample, noises)
+
+        self.files_labels = np.concatenate((self.files_labels, noises))
+
         rand.shuffle(self.files_labels)
         index = int(valset_proportion * len(self.files_labels))
         self.valset, self.trainset = self.files_labels[:index], self.files_labels[index:]
 
-        def toDataset(samples):
-            paths, labels, wavs = [], [], []
-            for sample in samples:
-                paths.append(sample.path)
-                labels.append(sample.label.index)
-                wavs.append(sample.wav)
+        self.valset = samples_to_dataset(self.valset)
+        self.trainset = samples_to_dataset(self.trainset)
+
+        def add_noise(path, label, wav):
+            paths, labels, wavs = [path], [label], [wav]
+            for noise in noises:
+                paths.append(path)
+                labels.append(label)
+                wavs.append(np.add(wav, noise.wav))
             paths = tf.Variable(paths, dtype=tf.string)
-            labels = tf.Variable(labels, dtype=tf.int32)
-            wavs = tf.Variable(wavs, dtype=tf.float32)
+            labels = tf.Variable(labels, dtype=tf.int16)
+            wavs = tf.convert_to_tensor(np.asarray(wavs))
             return data.Dataset.from_tensors((paths, labels, wavs))
 
-        self.valset = toDataset(self.valset)
-        self.trainset = toDataset(self.trainset)
+        self.trainset = self.trainset.flat_map(add_noise)
 
 
 def loadwav(path):
@@ -64,17 +72,19 @@ def loadwav(path):
     if samples.shape[0] < sample_rate:
         for i in range(0, sample_rate - samples.shape[0]):
             samples = np.append(samples, 0)
+    elif basename(dirname(path)) == '_background_noise_':
+        index = random.randint(0, samples.shape[0] - 16000)
+        samples = samples[index:index + 16000]
     return samples
 
 
-def add_noises(wav):
-    return 0
-
-
-def count_larger(wavs):
-    num_of_larger = 0
-    for wav in wavs:
-        sample_rate, samples = wavfile.read(wav)
-        if samples.shape[0] > sample_rate:
-            num_of_larger += 1
-    print('Number of recordings shorter than 1 second: ' + str(num_of_larger))
+def samples_to_dataset(samples):
+    paths, labels, wavs = [], [], []
+    for sample in samples:
+        paths.append(sample.path)
+        labels.append(sample.label.index)
+        wavs.append(sample.wav)
+    paths = tf.Variable(paths, dtype=tf.string)
+    labels = tf.Variable(labels, dtype=tf.int16)
+    wavs = tf.convert_to_tensor(np.asarray(wavs))
+    return data.Dataset.from_tensors((paths, labels, wavs))
