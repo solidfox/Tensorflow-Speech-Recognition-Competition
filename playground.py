@@ -1,4 +1,8 @@
 from data import *
+from preprocessing.preprocessing_graph import wavs_to_mfccs
+from model.convolutional import convolutional_model_fn
+
+signals = tf.placeholder(tf.float32, [None, 16000])
 
 def main():
     sample_manager = SamplesManager('data', 0.1)
@@ -9,10 +13,17 @@ def main():
     print(sample_manager.trainset)
     print(Label.all_labels)
 
-    # mfcc_test = create_mfcc(resample("data/train/audio/cat/300384f0_nohash_0.wav", 8000), 8000, 128, 13)
-    # print(mfcc_test)
-    # display_mfcc(mfcc_test)
-    # show_fft_sample("data/train/audio/cat/300384f0_nohash_0.wav")
+
+    mfccs = wavs_to_mfccs(signals)
+    # tf_network = convolutional_model_fn(preprocessed_voice_samples=mfccs,
+    #                                     labels=sample_manager.files_labels.map(lambda p, labels, w: labels), ...)
+
+    init = tf.initialize_all_variables()
+    sess = tf.InteractiveSession()
+    sess.run(init)
+
+    # sess.run(tf_network, feed_dict={signals: sample_manager.files_labels.map(lambda p, l, wavs: wavs)})
+
 
 
 if __name__ == '__main__':
