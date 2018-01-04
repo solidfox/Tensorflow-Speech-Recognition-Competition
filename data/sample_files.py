@@ -53,18 +53,7 @@ class SamplesManager:
         self.valset = samples_to_dataset(self.valset)
         self.trainset = samples_to_dataset(self.trainset)
 
-        def add_noise(path, label, wav):
-            paths, labels, wavs = [path], [label], [wav]
-            for noise in noises:
-                paths.append(path)
-                labels.append(label)
-                wavs.append(np.add(wav, noise.wav))
-            paths = tf.Variable(paths, dtype=tf.string)
-            labels = tf.Variable(labels, dtype=tf.int16)
-            wavs = tf.convert_to_tensor(np.asarray(wavs))
-            return data.Dataset.from_tensors((paths, labels, wavs))
-
-        self.trainset = self.trainset.flat_map(add_noise)
+        print(self.trainset)
 
 
 def loadwav(path):
@@ -87,4 +76,4 @@ def samples_to_dataset(samples):
     paths = tf.Variable(paths, dtype=tf.string)
     labels = tf.Variable(labels, dtype=tf.int16)
     wavs = tf.convert_to_tensor(np.asarray(wavs))
-    return data.Dataset.from_tensors((paths, labels, wavs))
+    return data.Dataset.from_tensor_slices((paths, labels, wavs))
