@@ -10,12 +10,15 @@ from data import SamplesManager
 class TFrecord_Writer:
     def __init__(self, dataset):
         self.dataset = dataset
-        self.filename = 'train.tfrecords'
+        self.filename = 'train.tfrecord'
 
     def write(self):
 
         if os.path.exists(self.filename):
-            os.remove(self.filename)
+            print
+            print "Error: {} already exists. Delete it and run again.".format(self.filename)
+            print
+            return
         writer = tf.python_io.TFRecordWriter(self.filename)
 
         n_wavs = len(self.dataset)
