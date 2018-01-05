@@ -30,7 +30,7 @@ def hyper_parameter_search():
 
     tf_h_params = tf.contrib.training.HParams(
         learning_rate=0.001,
-        dropout_rate =0.3,
+        dropout_rate=0.3,
         random_seed=2222
     )
 
