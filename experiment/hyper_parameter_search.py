@@ -4,15 +4,16 @@ import environment
 
 __author__ = 'Daniel Schlaug'
 
-def hyper_parameter_search():
+
+def hyper_parameter_search(trainset, valset):
     """
     Configures and runs the hyper-parameter search
 
     """
     # Set up the environment
     env_conf = environment.EnvironmentConfig()
-    train_input_fn = 42  # TODO
-    eval_input_fn = 42  # TODO
+    train_input_fn = input_fn(trainset)
+    eval_input_fn = input_fn(valset)
 
     run_config = tf.estimator.RunConfig(
         model_dir="model_output",
@@ -45,3 +46,10 @@ def hyper_parameter_search():
     )
 
     # (Evaluate the results and spin off more experiments?)
+
+
+def input_fn(dataset):
+    iterator = dataset.make_one_shot_iterator()
+    wav, label = iterator.get_next()
+
+    return wav, label

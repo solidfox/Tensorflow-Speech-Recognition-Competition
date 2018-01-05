@@ -15,7 +15,7 @@ class TFrecord_reader():
         # for record in tf.python_io.tf_record_iterator(self.filename):
         #     print(tf.train.Example.FromString(record))
         #     break
-        dataset = dataset.map(lambda record: tf.parse_single_example(record, feature))
+        dataset = dataset.map(lambda record: tf.parse_single_example(record, feature), num_parallel_calls=64)
         # TODO Adding noise
         trainset = dataset.skip(valset_proportion)
         trainset = trainset.batch(32)

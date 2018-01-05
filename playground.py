@@ -18,7 +18,7 @@ def main():
     print(trainset)
     print(valset)
 
-    # experiment.hyper_parameter_search.hyper_parameter_search(sample_manager.trainset, sample_manager.valset)
+    experiment.hyper_parameter_search.hyper_parameter_search(trainset, valset)
 
     # mfccs = decoded_samples_preprocessing(signals)
     # tf_network = convolutional_model_fn(preprocessed_voice_samples=mfccs,
