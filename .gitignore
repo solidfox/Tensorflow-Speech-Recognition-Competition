@@ -108,3 +108,6 @@ ENV/
 # jetbrains
 .idea
 *.iml
+
+# tfrecords files
+*.tfrecords

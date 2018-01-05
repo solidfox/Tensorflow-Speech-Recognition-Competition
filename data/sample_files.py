@@ -35,7 +35,7 @@ class SamplesManager:
         rand = random.Random(seed)
 
         all_files = glob(os.path.join(data_dir, 'train/audio/[!_]*/*wav'))
-        all_files = all_files[:10]
+        all_files = all_files[:100]
 
         noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav'))
         noises = np.repeat(noises, 4)
@@ -52,9 +52,6 @@ class SamplesManager:
 
         self.valset = samples_to_dataset(self.valset)
         self.trainset = samples_to_dataset(self.trainset)
-
-        print(self.trainset)
-
 
 def loadwav(path):
     sample_rate, samples = wavfile.read(path)
