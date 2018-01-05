@@ -28,7 +28,6 @@ class TFrecord_Writer:
                 print "\r", 'Converting wavs: {}/{}'.format(i, n_wavs),
 
             wav = self.dataset[i].get_wav()
-            # wav = wav.astype(np.float32)
 
             label = self.dataset[i].label.index
 

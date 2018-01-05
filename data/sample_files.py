@@ -49,10 +49,9 @@ class SamplesManager:
 
         all_files = glob(os.path.join(data_dir, 'train/audio/[!_]*/*wav'))
 
-        noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav')) + [""]
-        print(noises)
+        noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav')) + [""]  # Add complete silence as well.
         desired_number_of_noise_samples = 2000
-        repeats = desired_number_of_noise_samples / (len(noises))
+        repeats = desired_number_of_noise_samples / len(noises)
         noises = np.repeat(noises, repeats)
         print("Noises data: " + str(len(noises)))
 
