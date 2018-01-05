@@ -43,7 +43,7 @@ class Label(Label):
         labels = filter(lambda label: label.string == string, Label.all_labels)
         if len(labels) == 1:
             return labels[0]
-        elif string == "_background_noise_":
+        elif string == "_background_noise_" or string == "":
             return Label.silence
         elif string in _accepted_as_unknown:
             return Label.unknown

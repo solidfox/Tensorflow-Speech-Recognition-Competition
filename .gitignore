@@ -111,3 +111,4 @@ ENV/
 
 # tfrecords files
 *.tfrecords
+*.tfrecord

@@ -23,6 +23,8 @@ class Sample:
         return "Sample({}, {})".format(self.path, self.label)
 
     def get_wav(self):
+        if self.path == "":
+            return np.zeros(16000)
         sample_rate, samples = wavfile.read(self.path)
         if samples.shape[0] < sample_rate:
             padding = np.zeros(sample_rate - samples.shape[0])
@@ -44,13 +46,14 @@ class SamplesManager:
         :param data_dir: The parent folder of the training data. Should contain a folder called train with the training data.
         """
 
-        seed = 0
-        rand = random.Random(seed)
 
         all_files = glob(os.path.join(data_dir, 'train/audio/[!_]*/*wav'))
 
-        noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav'))
-        noises = np.repeat(noises, 4)
+        noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav')) + [""]
+        print(noises)
+        desired_number_of_noise_samples = 2000
+        repeats = desired_number_of_noise_samples / (len(noises))
+        noises = np.repeat(noises, repeats)
         print("Noises data: " + str(len(noises)))
 
         self.files_labels = map(Sample, all_files)
@@ -58,9 +61,14 @@ class SamplesManager:
 
         self.files_labels = np.concatenate((self.files_labels, noises))
 
+        seed = 0
+        rand = random.Random(seed)
+
+        rand.shuffle(self.files_labels)
+
+
 # TODO Move splitting logic into different file
 #
-#         rand.shuffle(self.files_labels)
 #         index = int(valset_proportion * len(self.files_labels))
 #         self.valset, self.trainset = self.files_labels[:index], self.files_labels[index:]
 #
