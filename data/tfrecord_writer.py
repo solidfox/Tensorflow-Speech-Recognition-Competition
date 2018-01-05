@@ -10,7 +10,7 @@ from data import SamplesManager
 class TFrecord_Writer:
     def __init__(self, dataset):
         self.dataset = dataset
-        self.filename = 'train.tfrecord'
+        self.filename = 'train.tfrecords'
 
     def write(self):
 

@@ -12,9 +12,11 @@ def main():
     print(Label.all_labels)
 
     tfwriter = TFrecord_Writer(sample_manager.files_labels)
-    # tfwriter.write()
+    tfwriter.write()
     tfreader = TFrecord_reader('train.tfrecords')
-    print(tfreader.nbr_elements)
+    trainset, valset = tfreader.generate_datasets(1000)
+    print(trainset)
+    print(valset)
 
     # experiment.hyper_parameter_search.hyper_parameter_search(sample_manager.trainset, sample_manager.valset)
 
