@@ -1,37 +1,37 @@
-import random
 import sys
-from os.path import dirname, basename
+import os
 
 import numpy as np
 import tensorflow as tf
-from scipy.io import wavfile
+
+from data import SamplesManager
 
 
 class TFrecord_Writer:
-    def __init__(self, dataset, mode='train'):
-        if mode == 'train':
-            self.dataset = dataset
-            self.filename = 'train.tfrecords'
+    def __init__(self, dataset):
+        self.dataset = dataset
+        self.filename = 'train.tfrecords'
 
     def write(self):
 
+        if os.path.exists(self.filename):
+            os.remove(self.filename)
         writer = tf.python_io.TFRecordWriter(self.filename)
 
-        for i in range(len(self.dataset)):
-            if not i % 1000:
-                print 'Train data: {}/{}'.format(i, len(self.dataset))
-                sys.stdout.flush()
+        n_wavs = len(self.dataset)
 
-            if self.dataset[i].wav:
-                wav = self.dataset[i].wav
-            else:
-                wav = loadwav(self.dataset[i].path)
+        for i in range(len(self.dataset)):
+            if not i % 100:
+                print "\r", 'Converting wavs: {}/{}'.format(i, n_wavs),
+
+            wav = self.dataset[i].get_wav()
+            wav = wav.astype(np.float32)
 
             label = self.dataset[i].label.index
 
             feature = {
-                'train/label': _int64_feature(label),
-                'train/wav': _int64_feature_array(wav)
+                'label': _int64_feature(label),
+                'wav': _float_feature_array(wav)
             }
 
             # example = tf.train.Example()
@@ -44,20 +44,15 @@ class TFrecord_Writer:
         sys.stdout.flush()
 
 
-def loadwav(path):
-    sample_rate, samples = wavfile.read(path)
-    if samples.shape[0] < sample_rate:
-        for i in range(0, sample_rate - samples.shape[0]):
-            samples = np.append(samples, 0)
-    elif basename(dirname(path)) == '_background_noise_':
-        index = random.randint(0, samples.shape[0] - 16000)
-        samples = samples[index:index + 16000]
-    return samples
-
-
 def _int64_feature(value):
     return tf.train.Feature(int64_list=tf.train.Int64List(value=[value]))
 
 
-def _int64_feature_array(array):
-    return tf.train.Feature(int64_list=tf.train.Int64List(value=array))
+def _float_feature_array(array):
+    return tf.train.Feature(float_list=tf.train.FloatList(value=array))
+
+if __name__ == '__main__':
+    sample_manager = SamplesManager("data")
+    dataset = sample_manager.files_labels
+    tfwriter = TFrecord_Writer(dataset)
+    tfwriter.write()
