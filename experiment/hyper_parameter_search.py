@@ -22,7 +22,7 @@ def hyper_parameter_search():
     eval_input_fn = dataset.next_validation_batch
 
     run_config = tf.contrib.learn.RunConfig(
-        model_dir="model_output",
+        model_dir=env_conf.model_output_dir,
         save_summary_steps=100
         # save_checkpoints_steps=
     )
