@@ -36,7 +36,7 @@ def tf_mfcc(signals, window_frame_length, stride, lower_edge_hertz, upper_edge_h
     log_mel_spectrograms = tf.log(mel_spectrograms + log_offset)
 
     # Compute MFCCs from log_mel_spectrograms and take the first 13.
-    num_mfccs = 13
+    num_mfccs = 20
     mfccs = tf.contrib.signal.mfccs_from_log_mel_spectrograms(log_mel_spectrograms)
     mfccs = mfccs[..., :num_mfccs]
 
