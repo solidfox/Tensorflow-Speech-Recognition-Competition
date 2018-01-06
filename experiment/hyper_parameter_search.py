@@ -14,7 +14,7 @@ def hyper_parameter_search():
     # Set up the environment
     env_conf = environment.EnvironmentConfig()
     dataset = data.TFRecordReader(
-        filename='train.tfrecord',
+        filename='data/train.tfrecord',
         validation_set_size=6000,
         batch_size=100
     )
