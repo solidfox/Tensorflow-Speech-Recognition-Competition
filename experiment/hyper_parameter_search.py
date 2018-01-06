@@ -60,3 +60,6 @@ def input_fn(dataset):
     wav, label = iterator.get_next()
 
     return wav, label
+
+if __name__ == '__main__':
+    hyper_parameter_search()
