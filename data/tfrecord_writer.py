@@ -10,7 +10,7 @@ from data import SamplesManager
 class TFrecord_Writer:
     def __init__(self, dataset):
         self.dataset = dataset
-        self.filename = 'train.tfrecords'
+        self.filename = 'data/train.tfrecord'
 
     def write(self):
 
@@ -27,7 +27,7 @@ class TFrecord_Writer:
             if not i % 100:
                 print "\r", 'Converting wavs: {}/{}'.format(i, n_wavs),
 
-            wav = self.dataset[i].get_wav()
+            wav = self.dataset[i].get_wav().astype(np.float32)
 
             label = self.dataset[i].label.index
 
