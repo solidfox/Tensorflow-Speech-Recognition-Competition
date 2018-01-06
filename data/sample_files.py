@@ -14,10 +14,10 @@ _seed = 0
 _default_random_generator = random.Random(_seed)
 
 class Sample:
-    def __init__(self, path, random_generator=None):
+    def __init__(self, path, random_generator=_default_random_generator):
         self.path = path
         self.label = Label.from_string(basename(dirname(path)))
-        self.random = random_generator if random_generator is not None else _default_random_generator
+        self.random_gen = random_generator
 
     def __repr__(self):
         return "Sample({}, {})".format(self.path, self.label)
@@ -28,10 +28,11 @@ class Sample:
         sample_rate, samples = wavfile.read(self.path)
         if samples.shape[0] < sample_rate:
             padding = np.zeros(sample_rate - samples.shape[0])
-            np.concatenate((samples, padding), axis=0)
+            samples = np.concatenate((samples, padding), axis=0)
         elif basename(dirname(self.path)) == '_background_noise_':
-            index = self.random.randint(0, samples.shape[0] - 16000)
+            index = self.random_gen.randint(0, samples.shape[0] - 16000)
             samples = samples[index:index + 16000]
+        assert len(samples) == 16000
         return samples
 
 
@@ -60,10 +61,7 @@ class SamplesManager:
 
         self.files_labels = np.concatenate((self.files_labels, noises))
 
-        seed = 0
-        rand = random.Random(seed)
-
-        rand.shuffle(self.files_labels)
+        _default_random_generator.shuffle(self.files_labels)
 
 
 # TODO Move splitting logic into different file
