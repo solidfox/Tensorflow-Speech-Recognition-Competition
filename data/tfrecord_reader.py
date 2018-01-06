@@ -23,15 +23,15 @@ class TFRecordReader:
     @property
     def dataset(self):
         with tf.name_scope('Whole_dataset'):
-            if self._dataset is None or self._dataset.graph != tf.get_default_graph():
-                self._dataset = tf.data.TFRecordDataset([self._filename]) \
+            if self._dataset is None:
+                self._dataset = tf.data.TFRecordDataset(filenames=[self._filename], buffer_size=5*(10**8)) \
                                   .map(_parse_tfrecord, num_parallel_calls=64)
             return self._dataset
 
     @property
     def training_set_iterator(self):
         with tf.name_scope('Training_data'):
-            if self._training_set_iterator is None or self._training_set_iterator.graph != tf.get_default_graph():
+            if self._training_set_iterator is None:
                 self._training_set_iterator = \
                     self.dataset.skip(self.validation_set_size) \
                                 .batch(self.batch_size) \
@@ -41,7 +41,7 @@ class TFRecordReader:
     @property
     def validation_set_iterator(self):
         with tf.name_scope('Validation_data'):
-            if self._validation_set_iterator is None or self._validation_set_iterator.graph != tf.get_default_graph():
+            if self._validation_set_iterator is None:
                 self._validation_set_iterator = \
                     self.dataset.take(self.validation_set_size) \
                                 .batch(self.batch_size) \
@@ -49,6 +49,7 @@ class TFRecordReader:
             return self._validation_set_iterator
 
     def next_training_batch(self):
+        print "Trained on one batch."
         return self.training_set_iterator.get_next()
 
     def next_validation_batch(self):

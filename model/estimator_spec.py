@@ -27,7 +27,7 @@ def estimator_spec(labels, learning_rate, logits, mode):
     with tf.name_scope('Evaluation'):
         accuracy = tf.metrics.accuracy(
                 labels=labels,
-                predictions=tf.argmax(inputs=logits, axis=1))
+                predictions=tf.argmax(input=logits, axis=1))
         evaluation_metric_operation = {
             'accuracy': accuracy}
         tf.summary.scalar('Validation_Accuracy', accuracy)
