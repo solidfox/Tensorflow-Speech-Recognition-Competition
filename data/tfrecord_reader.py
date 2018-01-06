@@ -6,7 +6,7 @@ def _parse_tfrecord(serialized_example):
         'wav': tf.FixedLenFeature([16000], tf.float32)
     }
     example = tf.parse_single_example(serialized_example, feature_schema)
-    return example["wav"], example["label"]
+    return example['wav'], example['label']
 
 
 class TFRecordReader:
