@@ -27,10 +27,17 @@ def hyper_parameter_search():
         # save_checkpoints_steps=
     )
 
+    # For Tensorboard
+    summary_hook = tf.train.SummarySaverHook(
+        save_steps=run_config.save_summary_steps,
+        scaffold=tf.train.Scaffold(),
+        summary_op=tf.summary.merge_all())
+
     experiment_factory = ExperimentFactory(
         environment_config=env_conf,
         train_input_fn=train_input_fn,
-        eval_input_fn=eval_input_fn
+        eval_input_fn=eval_input_fn,
+        eval_hooks=[summary_hook]
     )
 
     # Create hyper parameter grids for each experiment.

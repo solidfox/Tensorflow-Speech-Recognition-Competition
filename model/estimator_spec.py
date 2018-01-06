@@ -12,6 +12,8 @@ def estimator_spec(labels, learning_rate, logits, mode):
 
     with tf.name_scope('Loss'):
         loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
+        tf.summary.histogram('Histogram', loss)
+        tf.summary.scalar('Loss', loss)
 
     with tf.name_scope('Optimization'):
         if mode == tf.estimator.ModeKeys.TRAIN:
@@ -30,7 +32,8 @@ def estimator_spec(labels, learning_rate, logits, mode):
                 predictions=tf.argmax(input=logits, axis=1))
         evaluation_metric_operation = {
             'accuracy': accuracy}
-        tf.summary.scalar('Validation_Accuracy', accuracy)
+        tf.summary.scalar('Accuracy', accuracy)
+        tf.summary.histogram('Histogram', accuracy)
         return tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
