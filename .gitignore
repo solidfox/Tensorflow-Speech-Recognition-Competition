@@ -112,3 +112,4 @@ ENV/
 # tfrecords files
 *.tfrecords
 *.tfrecord
+/model_output
