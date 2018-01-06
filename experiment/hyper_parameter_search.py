@@ -18,8 +18,8 @@ def hyper_parameter_search():
         validation_set_size=6000,
         batch_size=100
     )
-    train_input_fn = dataset.train_input_fn
-    eval_input_fn = dataset.validation_input_fn
+    train_input_fn = dataset.next_training_batch
+    eval_input_fn = dataset.next_validation_batch
 
     run_config = tf.contrib.learn.RunConfig(
         model_dir="model_output",
