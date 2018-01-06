@@ -28,52 +28,60 @@ def convolutional_model_fn(features, labels, mode, params, config=None):
         decoded_samples=previous_layer,
         num_mel_bins=80,
         fft_resolution=256
+
     )
+    # Output shape: [None, 159, 13]
 
-    previous_layer = tf.layers.conv2d(
-        inputs=previous_layer,
-        filters=32,
-        kernel_size=[8, 20],
-        padding='same',
-        activation=tf.nn.elu)
+    with tf.name_scope('Convolutional_network'):
+        previous_layer = tf.expand_dims(previous_layer, -1)
 
-    previous_layer = tf.layers.max_pooling2d(
-        inputs=previous_layer,
-        pool_size=[8, 8],
-        strides=[8, 8])
+        previous_layer = tf.layers.conv2d(
+            inputs=previous_layer,
+            filters=32,
+            kernel_size=[8, 20],
+            padding='same',
+            activation=tf.nn.elu)
 
-    previous_layer = tf.layers.conv2d(
-        inputs=previous_layer,
-        filters=64,
-        kernel_size=[4, 4],
-        padding='same',
-        activation=tf.nn.elu)
+        previous_layer = tf.layers.max_pooling2d(
+            inputs=previous_layer,
+            pool_size=[8, 8],
+            strides=[8, 8])
 
-    previous_layer = tf.layers.max_pooling2d(
-        inputs=previous_layer,
-        pool_size=[2, 2],
-        strides=[2, 2])
+        previous_layer = tf.layers.conv2d(
+            inputs=previous_layer,
+            filters=64,
+            kernel_size=[4, 4],
+            padding='same',
+            activation=tf.nn.elu)
 
-    previous_layer = tf.layers.dense(
-        inputs=previous_layer,
-        units=200,
-        activation=tf.nn.elu)
+        previous_layer = tf.layers.max_pooling2d(
+            inputs=previous_layer,
+            pool_size=[2, 2],
+            strides=[2, 2])
 
-    previous_layer = tf.layers.dropout(
-        inputs=previous_layer,
-        rate=params.dropout_rate,
-        training=mode == tf.estimator.ModeKeys.TRAIN)
+    with tf.name_scope('Fully_connected_network'):
+        previous_layer = tf.layers.flatten(previous_layer)
 
-    previous_layer = tf.layers.dense(
-        inputs=previous_layer,
-        units=200,
-        activation=tf.nn.elu)
+        previous_layer = tf.layers.dense(
+            inputs=previous_layer,
+            units=200,
+            activation=tf.nn.elu)
 
-    previous_layer = tf.layers.dense(
-        inputs=previous_layer,
-        units=Label.n_labels(),
-        activation=tf.nn.elu)
+        previous_layer = tf.layers.dropout(
+            inputs=previous_layer,
+            rate=params.dropout_rate,
+            training=mode == tf.estimator.ModeKeys.TRAIN)
 
-    logits = previous_layer
+        previous_layer = tf.layers.dense(
+            inputs=previous_layer,
+            units=200,
+            activation=tf.nn.elu)
+
+        previous_layer = tf.layers.dense(
+            inputs=previous_layer,
+            units=Label.n_labels(),
+            activation=tf.nn.elu)
+
+        logits = previous_layer
 
     return estimator_spec(labels, params.learning_rate, logits, mode)
