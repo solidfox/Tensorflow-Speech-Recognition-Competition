@@ -1,25 +1,31 @@
 import tensorflow as tf
 
 
-class TFrecord_reader():
-    def __init__(self, filename):
-        self.filename = filename
-
-    def generate_datasets(self, valset_proportion):
-        feature = {
+class TFRecordReader:
+    def __init__(self, filename, validation_set_size, batch_size):
+        self.validation_set_size = validation_set_size
+        self.batch_size = batch_size
+        _feature_schema = {
             'label': tf.FixedLenFeature([], tf.int64),
             'wav': tf.FixedLenFeature([16000], tf.float32)
         }
-        dataset = tf.data.TFRecordDataset([self.filename])
-        dataset.batch(32)
+        self.dataset = tf.data.TFRecordDataset([filename]) \
+                         .map(lambda record: tf.parse_single_example(record, _feature_schema), num_parallel_calls=64)
         # for record in tf.python_io.tf_record_iterator(self.filename):
         #     print(tf.train.Example.FromString(record))
         #     break
-        dataset = dataset.map(lambda record: tf.parse_single_example(record, feature), num_parallel_calls=64)
         # TODO Adding noise
-        trainset = dataset.skip(valset_proportion)
-        trainset = trainset.batch(32)
-        valset = dataset.take(valset_proportion)
-        valset = valset.batch(32)
 
-        return trainset, valset
+    def train_input_fn(self):
+        with tf.name_scope('Training_data'):
+            training_set = self.dataset.skip(self.validation_set_size) \
+                                       .batch(self.batch_size)
+            iterator = training_set.make_initializable_iterator()
+
+
+
+    def validation_input_fn(self):
+        with tf.name_scope('Validation_data'):
+            validation_set = self.dataset.take(self.validation_set_size) \
+                                         .batch(self.batch_size)
+

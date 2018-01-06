@@ -1,19 +1,25 @@
 import tensorflow as tf
 from experiment_factory import ExperimentFactory
 import environment
+import data
 
 __author__ = 'Daniel Schlaug'
 
 
-def hyper_parameter_search(trainset, valset):
+def hyper_parameter_search():
     """
     Configures and runs the hyper-parameter search
 
     """
     # Set up the environment
     env_conf = environment.EnvironmentConfig()
-    train_input_fn = input_fn(trainset)
-    eval_input_fn = input_fn(valset)
+    dataset = data.TFRecordReader(
+        filename='train.tfrecord',
+        validation_set_size=6000,
+        batch_size=100
+    )
+    train_input_fn = dataset.train_input_fn
+    eval_input_fn = dataset.validation_input_fn
 
     run_config = tf.estimator.RunConfig(
         model_dir="model_output",
