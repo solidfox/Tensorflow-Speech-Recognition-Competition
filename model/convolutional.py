@@ -6,12 +6,12 @@ from model.estimator_spec import estimator_spec
 __author__ = 'Daniel Schlaug'
 
 
-def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, config=None):
+def convolutional_model_fn(features, labels, mode, params, config=None):
     """
     Configures a convolutional model.
 
     Args:
-        preprocessed_voice_samples: A 2D tensor with the inputs to the generated network.
+        features: A 2D tensor with the inputs to the generated network.
         labels: The word-labels for the spoken samples.
         mode: A tf.estimator.ModeKeys value indicating if network is to be used for training, evaluation or prediction.
         params (HParam): A tf.estimator.HParam object with the following hyperparameters:
@@ -22,7 +22,7 @@ def convolutional_model_fn(preprocessed_voice_samples, labels, mode, params, con
     Returns:
         An EstimatorSpec for the given input.
     """
-    previous_layer = preprocessed_voice_samples
+    previous_layer = features
 
     previous_layer = preprocessing.decoded_samples_preprocessing(
         decoded_samples=previous_layer,

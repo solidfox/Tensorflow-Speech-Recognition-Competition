@@ -21,7 +21,7 @@ def hyper_parameter_search():
     train_input_fn = dataset.train_input_fn
     eval_input_fn = dataset.validation_input_fn
 
-    run_config = tf.estimator.RunConfig(
+    run_config = tf.contrib.learn.RunConfig(
         model_dir="model_output",
         save_summary_steps=100
         # save_checkpoints_steps=
@@ -38,7 +38,8 @@ def hyper_parameter_search():
     tf_h_params = tf.contrib.training.HParams(
         learning_rate=0.001,
         dropout_rate=0.3,
-        random_seed=2222
+        random_seed=2222,
+        training_steps=3000
     )
 
     # Run experiments with all their corresponding parameter grids.

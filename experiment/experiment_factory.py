@@ -21,7 +21,7 @@ class ExperimentFactory:
             (Experiment) Experiment for training the mnist model.
         """
 
-        run_config = run_config.replace(random_seed=hyper_params.random_seed)
+        run_config = run_config.replace(tf_random_seed=hyper_params.random_seed)
 
         estimator = tf.estimator.Estimator(
             model_fn=model.convolutional_model_fn,
