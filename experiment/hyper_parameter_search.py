@@ -23,17 +23,17 @@ def hyper_parameter_search():
         env_conf = environment.EnvironmentConfig()
         dataset = data.TFRecordReader(
             filename='data/train.tfrecord',
-            validation_set_size=6000,
+            validation_set_size=100,
             batch_size=32
         )
-        train_input_fn = dataset.next_training_batch
-        eval_input_fn = dataset.next_validation_batch
+        train_input_fn = dataset.training_input_fn
+        eval_input_fn = dataset.validation_input_fn
 
         session_run_hook = CustomSessionRunHook()
 
         run_config = tf.contrib.learn.RunConfig(
             model_dir=env_conf.model_output_dir,
-            save_summary_steps=100
+            save_summary_steps=10
             # save_checkpoints_steps=
         )
 
@@ -70,6 +70,7 @@ def hyper_parameter_search():
             hparams=tf_h_params
         )
 
+        print "Finished training"
         # (Evaluate the results and spin off more experiments?)
 
 
