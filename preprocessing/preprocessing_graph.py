@@ -6,7 +6,7 @@ def decoded_samples_preprocessing(decoded_samples, num_mel_bins=80, fft_resoluti
     """Applies mfcc and normalization."""
     tf.summary.audio(
         name="Input wav",
-        tensor=decoded_samples,
+        tensor=tf.map_fn(lambda sample: tf.divide(sample, (2**16)/2), decoded_samples),
         sample_rate=16000
     )
     mfccs = tf_mfcc(
@@ -17,11 +17,11 @@ def decoded_samples_preprocessing(decoded_samples, num_mel_bins=80, fft_resoluti
         upper_edge_hertz=7600,
         fft_resolution=fft_resolution,
         num_mel_bins=num_mel_bins)
-    tf.summary.image(
-        name="Raw MFCC",
-        tensor=tf.expand_dims(mfccs, -1)
-    )
     # normalize
     # TODO: check dimension
     normalized_mfcc = tf.nn.l2_normalize(mfccs, dim=[1, 2])
+    tf.summary.image(
+        name="Normalized MFCC",
+        tensor=tf.expand_dims(tf.transpose(mfccs, perm=[0, 2, 1]), -1)
+    )
     return normalized_mfcc
