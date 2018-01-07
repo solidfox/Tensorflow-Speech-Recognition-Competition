@@ -5,6 +5,12 @@ import data
 
 __author__ = 'Daniel Schlaug'
 
+class CustomSessionRunHook(tf.train.SessionRunHook):
+    def __init__(self):
+        pass
+
+    def after_create_session(self, session, coord):
+        print "Session created"
 
 def hyper_parameter_search():
     """
@@ -23,6 +29,8 @@ def hyper_parameter_search():
         train_input_fn = dataset.next_training_batch
         eval_input_fn = dataset.next_validation_batch
 
+        session_run_hook = CustomSessionRunHook()
+
         run_config = tf.contrib.learn.RunConfig(
             model_dir=env_conf.model_output_dir,
             save_summary_steps=100
@@ -39,7 +47,8 @@ def hyper_parameter_search():
             environment_config=env_conf,
             train_input_fn=train_input_fn,
             eval_input_fn=eval_input_fn,
-            eval_hooks=[summary_hook]
+            eval_hooks=[summary_hook],
+            train_hooks=[session_run_hook]
         )
 
         # Create hyper parameter grids for each experiment.

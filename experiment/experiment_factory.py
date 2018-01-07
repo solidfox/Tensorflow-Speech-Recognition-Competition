@@ -5,11 +5,12 @@ __author__ = 'Daniel Schlaug'
 
 
 class ExperimentFactory:
-    def __init__(self, environment_config, train_input_fn, eval_input_fn, eval_hooks):
+    def __init__(self, environment_config, train_input_fn, eval_input_fn, eval_hooks, train_hooks):
         self.environment_config = environment_config
         self.train_input_fn = train_input_fn
         self.eval_input_fn = eval_input_fn
         self.eval_hooks = eval_hooks
+        self.train_hooks = train_hooks
 
     def convolutional_experiment(self, run_config, hyper_params):
         """Create an experiment to train and evaluate the model.
@@ -36,7 +37,7 @@ class ExperimentFactory:
             eval_input_fn=self.eval_input_fn,
             train_steps=hyper_params.training_steps,
             min_eval_frequency=run_config.save_summary_steps,
-            train_monitors=None,
+            train_monitors=self.train_hooks,
             eval_hooks=self.eval_hooks,
             eval_steps=None  # Use all evaluation samples
         )
