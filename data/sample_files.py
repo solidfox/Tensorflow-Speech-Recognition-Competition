@@ -24,10 +24,10 @@ class Sample:
 
     def get_wav(self):
         if self.path == "":
-            return np.zeros(16000)
+            return np.zeros(16000, dtype=np.int16)
         sample_rate, samples = wavfile.read(self.path)
         if samples.shape[0] < sample_rate:
-            padding = np.zeros(sample_rate - samples.shape[0])
+            padding = np.zeros(sample_rate - samples.shape[0], dtype=np.int16)
             samples = np.concatenate((samples, padding), axis=0)
         elif basename(dirname(self.path)) == '_background_noise_':
             index = self.random_gen.randint(0, samples.shape[0] - 16000)
