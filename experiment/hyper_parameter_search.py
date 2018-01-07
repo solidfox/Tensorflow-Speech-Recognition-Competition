@@ -23,8 +23,8 @@ def hyper_parameter_search():
         env_conf = environment.EnvironmentConfig()
         dataset = data.TFRecordReader(
             filename='data/train.tfrecord',
-            validation_set_size=100,
-            batch_size=32
+            validation_set_size=6000,
+            batch_size=128
         )
         train_input_fn = dataset.training_input_fn
         eval_input_fn = dataset.validation_input_fn
@@ -33,7 +33,7 @@ def hyper_parameter_search():
 
         run_config = tf.contrib.learn.RunConfig(
             model_dir=env_conf.model_output_dir,
-            save_summary_steps=10
+            save_summary_steps=100
             # save_checkpoints_steps=
         )
 
