@@ -18,40 +18,32 @@ class TFRecordReader:
         self.validation_set_size = validation_set_size
         self.batch_size = batch_size
 
-
-
-    @property
-    def dataset(self):
+    def new_dataset(self):
         with tf.name_scope('Whole_dataset'):
             if self._dataset is None:
                 self._dataset = tf.data.TFRecordDataset(filenames=[self._filename], buffer_size=5*(10**8)) \
                                   .map(_parse_tfrecord, num_parallel_calls=64)
             return self._dataset
 
-    @property
-    def training_set_iterator(self):
+    def new_training_set_iterator(self):
         with tf.name_scope('Training_data'):
-            if self._training_set_iterator is None:
-                self._training_set_iterator = \
-                    self.dataset.skip(self.validation_set_size) \
-                                .batch(self.batch_size) \
-                                .make_one_shot_iterator()
-            return self._training_set_iterator
+            return self.new_dataset().skip(self.validation_set_size) \
+                               .batch(self.batch_size) \
+                               .make_one_shot_iterator()
 
-    @property
-    def validation_set_iterator(self):
+    def new_validation_set_iterator(self):
         with tf.name_scope('Validation_data'):
-            if self._validation_set_iterator is None:
-                self._validation_set_iterator = \
-                    self.dataset.take(self.validation_set_size) \
+            return self.new_dataset().take(self.validation_set_size) \
                                 .batch(self.batch_size) \
                                 .make_one_shot_iterator()
-            return self._validation_set_iterator
 
-    def next_training_batch(self):
-        print "Trained on one batch."
-        return self.training_set_iterator.get_next()
+    def training_input_fn(self):
+        iterator = self.new_training_set_iterator()
+        features, labels = iterator.get_next()
+        return features, labels
 
-    def next_validation_batch(self):
-        return self.validation_set_iterator.get_next()
+    def validation_input_fn(self):
+        iterator = self.new_validation_set_iterator()
+        features, labels = iterator.get_next()
+        return features, labels
 
