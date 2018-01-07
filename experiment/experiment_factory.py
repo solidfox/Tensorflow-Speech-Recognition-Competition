@@ -1,45 +1,34 @@
 import tensorflow as tf
-import model
 
 __author__ = 'Daniel Schlaug'
 
 
 class ExperimentFactory:
-    def __init__(self, environment_config, train_input_fn, eval_input_fn, eval_hooks, train_hooks):
+    def __init__(self, environment_config, train_input_fn, eval_input_fn,
+                 eval_hooks, train_hooks, interleaved_eval_samples):
         self.environment_config = environment_config
         self.train_input_fn = train_input_fn
         self.eval_input_fn = eval_input_fn
         self.eval_hooks = eval_hooks
         self.train_hooks = train_hooks
+        self.interleaved_eval_samples = interleaved_eval_samples
 
-    def convolutional_experiment(self, run_config, hyper_params):
-        """Create an experiment to train and evaluate the model.
-
+    def experiment(self, estimator):
+        """
         Args:
-            run_config (RunConfig): Configuration for Estimator run.
-            hyper_params (HParam): Hyperparameters
+            estimator (tensorflow.estimator.Estimator):
 
         Returns:
-            (Experiment) Experiment for training the mnist model.
+            tensorflow.contrib.learn.Experiment: Experiment with the factory's presets and the given estimator.
         """
-
-        run_config = run_config.replace(tf_random_seed=hyper_params.random_seed)
-
-        estimator = tf.estimator.Estimator(
-            model_fn=model.convolutional_model_fn,
-            params=hyper_params,
-            config=run_config
-        )
-
-        experiment = tf.contrib.learn.Experiment(
+        return tf.contrib.learn.Experiment(
             estimator=estimator,
             train_input_fn=self.train_input_fn,
             eval_input_fn=self.eval_input_fn,
-            train_steps=hyper_params.training_steps,
-            min_eval_frequency=run_config.save_summary_steps,
+            train_steps=estimator.params.training_steps,
+            min_eval_frequency=estimator.config.save_summary_steps,
             train_monitors=self.train_hooks,
             eval_hooks=self.eval_hooks,
-            eval_steps=None  # Use all evaluation samples
+            eval_steps=self.interleaved_eval_samples,
+            checkpoint_and_export=False,
         )
-
-        return experiment

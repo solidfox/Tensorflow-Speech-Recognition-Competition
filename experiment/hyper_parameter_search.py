@@ -1,4 +1,6 @@
 import tensorflow as tf
+
+import model
 from experiment_factory import ExperimentFactory
 import environment
 import data
@@ -26,16 +28,14 @@ def hyper_parameter_search():
             validation_set_size=6000,
             batch_size=128
         )
-        train_input_fn = dataset.training_input_fn
-        eval_input_fn = dataset.validation_input_fn
-
-        session_run_hook = CustomSessionRunHook()
 
         run_config = tf.contrib.learn.RunConfig(
             model_dir=env_conf.model_output_dir,
-            save_summary_steps=100
+            save_summary_steps=100,
             # save_checkpoints_steps=
         )
+
+        session_run_hook = CustomSessionRunHook()
 
         # For Tensorboard
         summary_hook = tf.train.SummarySaverHook(
@@ -45,15 +45,16 @@ def hyper_parameter_search():
 
         experiment_factory = ExperimentFactory(
             environment_config=env_conf,
-            train_input_fn=train_input_fn,
-            eval_input_fn=eval_input_fn,
+            train_input_fn=dataset.training_input_fn,
+            eval_input_fn=dataset.validation_input_fn,
             eval_hooks=[summary_hook],
-            train_hooks=[session_run_hook]
+            train_hooks=[session_run_hook],
+            interleaved_eval_samples=100,
         )
 
         # Create hyper parameter grids for each experiment.
 
-        tf_h_params = tf.contrib.training.HParams(
+        hyper_params = tf.contrib.training.HParams(
             learning_rate=0.001,
             dropout_rate=0.3,
             random_seed=2222,
@@ -63,12 +64,19 @@ def hyper_parameter_search():
         # Run experiments with all their corresponding parameter grids.
         # This is where TFLauncher comes in on hops
 
-        tf.contrib.learn.learn_runner.run(
-            experiment_fn=experiment_factory.convolutional_experiment,
-            run_config=run_config,
-            schedule="train_and_evaluate",
-            hparams=tf_h_params
+        run_config = run_config.replace(tf_random_seed=hyper_params.random_seed)
+
+        estimator = tf.estimator.Estimator(
+            model_fn=model.convolutional_model_fn,
+            params=hyper_params,
+            config=run_config
         )
+
+        experiment = experiment_factory.experiment(estimator)
+
+        experiment.test()
+
+        experiment.train_and_evaluate()
 
         print "Finished training"
         # (Evaluate the results and spin off more experiments?)
