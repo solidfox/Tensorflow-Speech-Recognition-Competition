@@ -28,14 +28,15 @@ class TFRecordReader:
     def new_training_set_iterator(self):
         with tf.name_scope('Training_data'):
             return self.new_dataset().skip(self.validation_set_size) \
-                               .batch(self.batch_size) \
-                               .make_one_shot_iterator()
+                                     .repeat() \
+                                     .batch(self.batch_size) \
+                                     .make_one_shot_iterator()
 
     def new_validation_set_iterator(self):
         with tf.name_scope('Validation_data'):
             return self.new_dataset().take(self.validation_set_size) \
-                                .batch(self.batch_size) \
-                                .make_one_shot_iterator()
+                                     .batch(self.batch_size) \
+                                     .make_one_shot_iterator()
 
     def training_input_fn(self):
         iterator = self.new_training_set_iterator()
