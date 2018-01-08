@@ -8,9 +8,9 @@ from data import SamplesManager
 
 
 class TFrecord_Writer:
-    def __init__(self, dataset):
+    def __init__(self, dataset, output_file):
         self.dataset = dataset
-        self.filename = 'data/train.tfrecord'
+        self.filename = output_file
 
     def write(self):
 
@@ -51,7 +51,7 @@ def _float_feature_array(array):
     return tf.train.Feature(float_list=tf.train.FloatList(value=array))
 
 if __name__ == '__main__':
-    sample_manager = SamplesManager("data")
+    sample_manager = SamplesManager("input")
     dataset = sample_manager.files_labels
-    tfwriter = TFrecord_Writer(dataset)
+    tfwriter = TFrecord_Writer(dataset, "input.train.tfrecord")
     tfwriter.write()

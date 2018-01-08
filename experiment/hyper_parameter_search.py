@@ -1,3 +1,4 @@
+import os
 import tensorflow as tf
 
 import model
@@ -24,7 +25,7 @@ def hyper_parameter_search():
         # Set up the environment
         env_conf = environment.EnvironmentConfig()
         dataset = data.TFRecordReader(
-            filename='data/train.tfrecord',
+            filename=os.path.join(env_conf.input_dir, 'train.tfrecord'),
             validation_set_size=6000,
             batch_size=128
         )
@@ -32,7 +33,7 @@ def hyper_parameter_search():
         tf.logging.set_verbosity(tf.logging.INFO)
 
         run_config = tf.contrib.learn.RunConfig(
-            model_dir=env_conf.model_output_dir,
+            model_dir=env_conf.output_dir,
             save_summary_steps=10,
             # save_checkpoints_steps=
         )
