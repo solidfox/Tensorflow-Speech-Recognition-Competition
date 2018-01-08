@@ -4,7 +4,7 @@ import os
 import numpy as np
 import tensorflow as tf
 
-from data import SamplesManager
+from speechrecproj.data import SamplesManager
 
 
 class TFrecord_Writer:

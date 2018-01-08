@@ -1,5 +1,5 @@
 import tensorflow as tf
-from preprocessing.mfcc import tf_mfcc
+from speechrecproj.preprocessing import tf_mfcc
 
 
 def decoded_samples_preprocessing(decoded_samples, num_mel_bins=80, fft_resolution=256):

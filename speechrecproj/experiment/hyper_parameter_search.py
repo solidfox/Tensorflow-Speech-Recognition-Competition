@@ -1,10 +1,8 @@
 import os
 import tensorflow as tf
 
-import model
 from experiment_factory import ExperimentFactory
-import environment
-import data
+from speechrecproj import environment, model, data
 
 __author__ = 'Daniel Schlaug'
 

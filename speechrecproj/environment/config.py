@@ -1,4 +1,4 @@
-import environment
+from speechrecproj import environment
 
 __author__ = 'Daniel Schlaug'
 

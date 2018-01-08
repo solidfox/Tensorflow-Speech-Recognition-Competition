@@ -1,8 +1,7 @@
 import tensorflow as tf
-import unittest
-from data import Label
+from speechrecproj.data import Label
 
-from data import SamplesManager
+from speechrecproj.data import SamplesManager
 
 __author__ = 'Daniel Schlaug'
 
