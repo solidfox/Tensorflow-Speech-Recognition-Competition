@@ -1,7 +1,7 @@
 import tensorflow as tf
-import preprocessing
-from data.labels import Label
-from model.estimator_spec import estimator_spec
+from speechrecproj import preprocessing
+from speechrecproj.data import Label
+from speechrecproj.model.estimator_spec import estimator_spec
 
 __author__ = 'Daniel Schlaug'
 

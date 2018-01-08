@@ -1,5 +1,5 @@
-from data import *
-import experiment.hyper_parameter_search
+from speechrecproj.data import *
+
 signals = tf.placeholder(tf.float32, [None, 16000])
 
 
@@ -14,7 +14,7 @@ def main():
     tfreader = TFRecordReader(filename='data/train.tfrecord', validation_set_size=6000, batch_size=600)
     wavs, labels = tfreader.next_training_batch()
 
-    experiment.hyper_parameter_search.hyper_parameter_search()
+    speechrecproj.experiment.hyper_parameter_search.hyper_parameter_search()
 
     # with tf.Session() as sess:
     #     result = sess.run(wavs)

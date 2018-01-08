@@ -112,8 +112,9 @@ ENV/
 # tfrecords files
 *.tfrecords
 *.tfrecord
-/model_output
+/output
 experiment/model_output
 
 # submission file
 /submission/*
+/input
