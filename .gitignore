@@ -117,3 +117,5 @@ experiment/model_output
 
 # submission file
 /submission/*
+/output
+/input
