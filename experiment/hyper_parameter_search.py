@@ -4,6 +4,7 @@ import model
 from experiment_factory import ExperimentFactory
 import environment
 import data
+from postprocessing.generate_result import generate_result
 
 __author__ = 'Daniel Schlaug'
 
@@ -84,6 +85,8 @@ def hyper_parameter_search():
         print "Finished training"
         # (Evaluate the results and spin off more experiments?)
 
+        # predictions on the test data and generate the csv file
+    generate_result(estimator=estimator)
 
 if __name__ == '__main__':
     hyper_parameter_search()

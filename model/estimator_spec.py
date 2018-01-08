@@ -8,7 +8,9 @@ def estimator_spec(labels, learning_rate, logits, mode):
         if mode == tf.estimator.ModeKeys.PREDICT:
             return tf.estimator.EstimatorSpec(
                 mode=mode,
-                predictions=tf.nn.softmax(logits, "softmax_predictions"))
+                predictions={
+                    'label': tf.argmax(logits, axis=-1)
+                })
 
     with tf.name_scope('Loss'):
         loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)

@@ -18,7 +18,7 @@ def decoded_samples_preprocessing(decoded_samples, num_mel_bins=80, fft_resoluti
         fft_resolution=fft_resolution,
         num_mel_bins=num_mel_bins)
     # normalize
-    # TODO: check dimension
+
     normalized_mfcc = tf.nn.l2_normalize(mfccs, dim=[1, 2])
     tf.summary.image(
         name="Normalized MFCC",
