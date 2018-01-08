@@ -29,9 +29,11 @@ def hyper_parameter_search():
             batch_size=128
         )
 
+        tf.logging.set_verbosity(tf.logging.INFO)
+
         run_config = tf.contrib.learn.RunConfig(
             model_dir=env_conf.model_output_dir,
-            save_summary_steps=100,
+            save_summary_steps=10,
             # save_checkpoints_steps=
         )
 
@@ -49,7 +51,8 @@ def hyper_parameter_search():
             eval_input_fn=dataset.validation_input_fn,
             eval_hooks=[summary_hook],
             train_hooks=[session_run_hook],
-            interleaved_eval_samples=100,
+            interleaved_eval_steps=1,
+            interleaved_eval_frequency=50,
         )
 
         # Create hyper parameter grids for each experiment.
