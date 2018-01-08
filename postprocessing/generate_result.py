@@ -4,63 +4,81 @@ import pandas as pd
 from scipy.io import wavfile
 import tensorflow as tf
 import numpy as np
+from tqdm import tqdm
+from tensorflow.contrib.learn.python.learn.learn_io.generator_io import generator_input_fn
 
 
-def generate_result():
+def generate_result(estimator):
     sub_path = "submission/"
     test_data_dir = "data/test/"
     test_paths = glob(os.path.join(test_data_dir, '[!_]*/*wav'))
 
-    fname, results = [], []
+    fname, labels = [], []
 
-    names, wavs = decode_wav(test_paths)
-    predictions = create_dic(wavs)
+    # for path in test_paths:
+    #     sample_rate, samps = wavfile.read(path)
+    #     samples.append(samps)
+    #
+    #     file_name = os.path.basename(path)
+    #     print(file_name)
+    #     fname.append(file_name)
+    #
+    # np_samples = np.array(samples)
+    # print(np_samples)
+    # print(np_samples.shape)
+
+    # dictionary = create_dic(test_paths)
+    # print(dictionary)
+
+    predictions = predict(test_paths=test_paths, estimator=estimator)
+    print(predictions)
 
     for p in predictions:
         print(p)
-        results.extend(p)
-    for i in names:
-        print(i)
-        fname.extend(i)
 
-    # Create the submission file
+
+    # # Create the submission file
     df = pd.DataFrame(columns=['fname', 'label'])
     df['fname'] = fname
-    df['label'] = results
+    df['label'] = labels
     df.to_csv(os.path.join(sub_path, 'submission.csv'), index=False)
 
 
-def decode_wav(test_paths):
-    names, wavs = [], []
-
-    graph = tf.Graph()
-    with graph.as_default():
-        file_sample = tf.placeholder(dtype=tf.float32)
-        file_name = tf.placeholder(dtype=tf.string)
-        sample_rate, samples = wavfile.read(file_sample)
-        wav = samples
-        name = os.path.basename(file_name)
-
-    with tf.Session(graph=graph) as session:
-        tf.initialize_all_variables().run()
-
+def create_dict(test_paths):
+    def generator():
         for path in test_paths:
-            names.append(session.run(name, feed_dict={file_name: path}))
-            wavs.append(session.run(wav, feed_dict={file_sample: path}))
-            # TODO: ending print
+            _, sample = wavfile.read(path)
+            sample = sample.astype(np.float32) / np.iinfo(np.int16).max
+            fname = os.path.basename(path)
+            yield dict(
+                sample_name=np.string_(fname),
+                sample=sample,
+            )
+    return generator
 
-        session.close()
 
-    return names, wavs
+# def create_dic(test_paths):
+#     return tf.estimator.inputs.numpy_input_fn(
+#         x=test_data_generator(test_paths),
+#         y=None,
+#         shuffle=False,
+#         num_epochs=1
+#     )
 
 
-def create_dic(wavs):
-    return tf.estimator.inputs.numpy_input_fn(
-        x=wavs,
-        y=None,
+def predict(test_paths, estimator):
+    input_fn = generator_input_fn(
+        x=create_dict(test_paths),
+        batch_size=1,
         shuffle=False,
-        num_epochs=1
+        num_epochs=1,
+        queue_capacity=1,
+        num_threads=1,
     )
 
-if __name__ == '__main__':
-    generate_result()
+    return estimator.predict(
+        input_fn=input_fn,
+        predict_keys=None,
+        hooks=None,
+        checkpoint_path=None
+    )
