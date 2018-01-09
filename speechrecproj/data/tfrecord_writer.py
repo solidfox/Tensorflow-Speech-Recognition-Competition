@@ -53,5 +53,5 @@ def _float_feature_array(array):
 if __name__ == '__main__':
     sample_manager = SamplesManager("input")
     dataset = sample_manager.files_labels
-    tfwriter = TFrecord_Writer(dataset, "input.train.tfrecord")
+    tfwriter = TFrecord_Writer(dataset, "train.tfrecord")
     tfwriter.write()
