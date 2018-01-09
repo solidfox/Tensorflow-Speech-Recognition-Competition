@@ -49,6 +49,7 @@ class SamplesManager:
 
 
         all_files = glob(os.path.join(data_dir, 'train/audio/[!_]*/*wav'))
+        print("Sample files: " + str(len(all_files)))
 
         noises = glob(os.path.join(data_dir, 'train/audio/_*/*wav')) + [""]  # Add complete silence as well.
         desired_number_of_noise_samples = 2000
@@ -58,6 +59,8 @@ class SamplesManager:
 
         self.files_labels = map(Sample, all_files)
         noises = map(Sample, noises)
+
+        print("Samples with label unknown: " + str(len(filter(lambda sample: sample.label == Label.unknown, self.files_labels))))
 
         self.files_labels = np.concatenate((self.files_labels, noises))
 
