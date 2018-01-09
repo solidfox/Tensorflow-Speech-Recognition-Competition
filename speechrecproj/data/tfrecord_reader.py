@@ -33,7 +33,7 @@ class TFRecordReader:
 
     def new_validation_set_iterator(self):
         with tf.name_scope('Validation_data'):
-            return self.dataset().take(self.validation_set_size) \
+            return self.dataset.take(self.validation_set_size) \
                                  .batch(self.batch_size) \
                                  .make_one_shot_iterator()
 
