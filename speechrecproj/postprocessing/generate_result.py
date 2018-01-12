@@ -22,7 +22,7 @@ def generate_result(estimator, test_data_dir, submission_filename='submission/su
     for path in test_paths:
         fname.append(os.path.basename(path))
 
-    predictions = predict(estimator=estimator)
+    predictions = predict(estimator=estimator, test_paths=test_paths)
 
     for i, p in enumerate(predictions):
         print(i)
@@ -35,15 +35,18 @@ def generate_result(estimator, test_data_dir, submission_filename='submission/su
     df.to_csv(submission_filename, index=False)
 
 
-def test_input():
-    dataset = tf.contrib.data.Dataset.from_generator(
-        generator=test_data_generator(),
-        output_types=tf.float32,
-        output_shapes=tf.TensorShape([16000])
-    )
-    return dataset.batch(128).make_one_shot_iterator().get_next()
+def test_input(test_paths):
+    def intpu_fn():
+        dataset = tf.contrib.data.Dataset.from_generator(
+            generator=test_data_generator(test_paths),
+            output_types=tf.float32,
+            output_shapes=tf.TensorShape([16000])
+        )
+        return dataset.batch(128).make_one_shot_iterator().get_next()
+    return intpu_fn
 
-def test_data_generator():
+
+def test_data_generator(test_paths):
     def generator():
         for path in test_paths:
             _, wav = wavfile.read(path)
@@ -51,9 +54,10 @@ def test_data_generator():
             yield wav
     return generator
 
-def predict(estimator):
+
+def predict(estimator, test_paths):
     return estimator.predict(
-        input_fn=test_input,
+        input_fn=test_input(test_paths),
         predict_keys=None,
         hooks=None,
         checkpoint_path=None
