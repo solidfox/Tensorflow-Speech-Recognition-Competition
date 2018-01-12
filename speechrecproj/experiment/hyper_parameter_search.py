@@ -2,7 +2,6 @@ import os
 import tensorflow as tf
 
 from experiment_factory import ExperimentFactory
-from speechrecproj.postprocessing.generate_result import generate_result
 from speechrecproj import environment, model, data
 
 __author__ = 'Daniel Schlaug'
@@ -85,10 +84,6 @@ def hyper_parameter_search():
         # (Evaluate the results and spin off more experiments?)
 
         # predictions on the test data and generate the csv file
-
-    generate_result(estimator=estimator,
-                    test_data_dir=os.path.join(env_conf.input_dir, 'test'),
-                    submission_filename=os.path.join(env_conf.output_dir, 'submission.csv'))
 
 if __name__ == '__main__':
     hyper_parameter_search()

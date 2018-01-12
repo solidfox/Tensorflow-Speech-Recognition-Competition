@@ -5,7 +5,7 @@ from scipy.io import wavfile
 import tensorflow as tf
 import numpy as np
 from speechrecproj.data.labels import Label
-from os.path import dirname, basename
+from os.path import dirname
 
 
 def generate_result(estimator, test_data_dir, submission_filename='submission/submission.csv'):
