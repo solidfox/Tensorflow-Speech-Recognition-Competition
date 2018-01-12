@@ -3,10 +3,7 @@ from os.path import dirname, basename
 import random
 from labels import Label
 import os
-import tensorflow as tf
-from tensorflow import data
 import numpy as np
-from scipy.io import wavfile
 
 __author__ = 'Daniel Schlaug'
 
@@ -21,19 +18,6 @@ class Sample:
 
     def __repr__(self):
         return "Sample({}, {})".format(self.path, self.label)
-
-    def get_wav(self):
-        if self.path == "":
-            return np.zeros(16000, dtype=np.int16)
-        sample_rate, samples = wavfile.read(self.path)
-        if samples.shape[0] < sample_rate:
-            padding = np.zeros(sample_rate - samples.shape[0], dtype=np.int16)
-            samples = np.concatenate((samples, padding), axis=0)
-        elif basename(dirname(self.path)) == '_background_noise_':
-            index = self.random_gen.randint(0, samples.shape[0] - 16000)
-            samples = samples[index:index + 16000]
-        assert len(samples) == 16000
-        return samples
 
 
 
