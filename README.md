@@ -1,4 +1,4 @@
-# Google Brain Speech Recognition Competition
+# Tensorflow Speech Recognition Competition
 
 Written for ID2223 at KTH by
 Marc Jourdes
