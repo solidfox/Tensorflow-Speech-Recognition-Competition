@@ -4,13 +4,20 @@ __author__ = 'Daniel Schlaug'
 
 
 def estimator_spec(labels, learning_rate, logits, mode):
+    export_outputs = {
+        None: tf.estimator.export.ClassificationOutput(
+            scores=logits,
+            classes=None  # TODO
+        )
+    }
+
     with tf.name_scope('Prediction'):
         if mode == tf.estimator.ModeKeys.PREDICT:
             return tf.estimator.EstimatorSpec(
                 mode=mode,
-                predictions={
-                    'label': tf.argmax(logits, axis=-1)
-                })
+                predictions=dict(
+                    label=tf.argmax(logits, axis=-1)),
+                export_outputs=export_outputs)
 
     with tf.name_scope('Loss'):
         loss = tf.losses.sparse_softmax_cross_entropy(labels, logits)
@@ -28,7 +35,8 @@ def estimator_spec(labels, learning_rate, logits, mode):
             return tf.estimator.EstimatorSpec(
                 mode=mode,
                 loss=loss,
-                train_op=train_operation)
+                train_op=train_operation,
+                export_outputs=export_outputs)
 
     with tf.name_scope('Evaluation'):
         accuracy = tf.metrics.accuracy(
@@ -40,7 +48,8 @@ def estimator_spec(labels, learning_rate, logits, mode):
         return tf.estimator.EstimatorSpec(
             mode=mode,
             loss=loss,
-            eval_metric_ops=evaluation_metric_operation)
+            eval_metric_ops=evaluation_metric_operation,
+            export_outputs=export_outputs)
 
 
 def variable_histogram(var):

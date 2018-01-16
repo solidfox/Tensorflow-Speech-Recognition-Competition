@@ -6,12 +6,14 @@ from speechrecproj import environment, model, data
 
 __author__ = 'Daniel Schlaug'
 
+
 class CustomSessionRunHook(tf.train.SessionRunHook):
     def __init__(self):
         pass
 
     def after_create_session(self, session, coord):
         print "Session created"
+
 
 def hyper_parameter_search():
     """
@@ -74,11 +76,18 @@ def hyper_parameter_search():
             config=run_config
         )
 
-        experiment = experiment_factory.experiment(estimator)
+        # experiment = experiment_factory.experiment(estimator)
+        #
+        # experiment.test()
+        #
+        # experiment.train_and_evaluate()
 
-        experiment.test()
-
-        experiment.train_and_evaluate()
+        estimator.export_savedmodel(
+            export_dir_base=run_config.model_dir,
+            serving_input_receiver_fn=tf.estimator.export.build_raw_serving_input_receiver_fn(
+                features=dict(wav=tf.placeholder(tf.float32, shape=(None, 16000), name='input'))
+            )
+        )
 
         print "Finished training"
         # (Evaluate the results and spin off more experiments?)

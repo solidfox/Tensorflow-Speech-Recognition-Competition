@@ -22,7 +22,7 @@ def convolutional_model_fn(features, labels, mode, params, config=None):
     Returns:
         An EstimatorSpec for the given input.
     """
-    previous_layer = features
+    previous_layer = features['wav']
 
     previous_layer = preprocessing.decoded_samples_preprocessing(
         decoded_samples=previous_layer,
